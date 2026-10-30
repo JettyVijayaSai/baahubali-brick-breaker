@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Baahubali: The Brick Breaker - Mahishmati Metal Smasher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Rajdhani:wght@600;700&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-wrapper">
+    <!-- Top HUD Bar -->
+    <header id="hud-bar">
+      <div class="hud-group">
+        <div class="hud-item score-box">
+          <span class="hud-label">SCORE</span>
+          <span id="score-val" class="hud-val">0</span>
+        </div>
+        <div class="hud-item high-score-box">
+          <span class="hud-label">HIGH SCORE</span>
+          <span id="high-score-val" class="hud-val">0</span>
+        </div>
+      </div>
+
+      <!-- Active Hero & Swap Indicator -->
+      <div id="hero-status-container">
+        <div id="hero-avatar-ring">
+          <img id="hud-hero-img" src="assets/char1.png" alt="Hero" onerror="this.style.display='none'">
+          <div id="hud-hero-fallback" class="hero-initial">B</div>
+        </div>
+        <div class="hero-info">
+          <span id="hero-name">AMARENDRA BAAHUBALI</span>
+          <div class="swap-meter-bar">
+            <div id="swap-meter-fill" style="width: 0%;"></div>
+          </div>
+          <span id="swap-counter-txt">SWAP IN 3 HITS</span>
+        </div>
+      </div>
+
+      <div class="hud-group hud-right">
+        <div class="hud-item streak-box">
+          <span class="hud-label">PADDLE STREAK</span>
+          <span id="streak-val" class="hud-val">0 🔥</span>
+        </div>
+        <div class="hud-item lives-box">
+          <span class="hud-label">SHIELDS</span>
+          <div id="lives-icons">
+            <span class="shield-icon active">🛡️</span>
+            <span class="shield-icon active">🛡️</span>
+            <span class="shield-icon active">🛡️</span>
+          </div>
+        </div>
+        <button id="mute-btn" class="hud-btn" title="Toggle Sound (M)" aria-label="Toggle Sound">
+          <span id="mute-icon">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Canvas Frame with 16:9 Aspect Ratio -->
+    <main id="canvas-container">
+      <canvas id="gameCanvas" width="1280" height="720"></canvas>
+
+      <!-- Dynamic Cinema Dialogue Toast -->
+      <div id="dialogue-banner" class="hidden">
+        <div class="dialogue-speaker" id="dialogue-speaker">BAAHUBALI</div>
+        <div class="dialogue-text" id="dialogue-text">"JAI MAHISHMATI!"</div>
+      </div>
+
+      <!-- Character Swap Announcement Flash Banner -->
+      <div id="swap-flash-banner" class="hidden">
+        <div class="swap-flash-title">⚡ CHARACTER SWAP! ⚡</div>
+        <div id="swap-flash-sub" class="swap-flash-sub">BHALLALADEVA ENTERS THE BATTLE</div>
+      </div>
+
+      <!-- Start Screen Overlay -->
+      <div id="start-screen" class="overlay-screen">
+        <div class="overlay-card">
+          <div class="royal-crest">👑 ⚔️ 👑</div>
+          <h1 class="game-title">BAAHUBALI</h1>
+          <h2 class="game-subtitle">THE BRICK BREAKER: MAHISHMATI TRIBUTE</h2>
+          <p class="tagline">SMASH THE ROYAL METALS • ROTATE THE WARRIORS • UNLEASH CINEMA PUNCHLINES</p>
+
+          <div class="characters-preview">
+            <div class="char-card" id="preview-char1">
+              <div class="char-portrait">
+                <img src="assets/char1.png" alt="Baahubali" onerror="this.src=''; this.alt='⚔️'">
+              </div>
+              <div class="char-info">
+                <strong>Baahubali</strong>
+                <span>The Rightful King</span>
+              </div>
+            </div>
+            <div class="char-card" id="preview-char2">
+              <div class="char-portrait">
+                <img src="assets/char2.png" alt="Bhallaladeva" onerror="this.src=''; this.alt='👑'">
+              </div>
+              <div class="char-info">
+                <strong>Bhallaladeva</strong>
+                <span>Fierce Destroyer</span>
+              </div>
+            </div>
+            <div class="char-card" id="preview-char3">
+              <div class="char-portrait">
+                <img src="assets/char3.png" alt="Kattappa" onerror="this.src=''; this.alt='🛡️'">
+              </div>
+              <div class="char-info">
+                <strong>Kattappa</strong>
+                <span>Loyal Commander</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-guide">
+            <div class="control-key"><span>MOUSE</span> or <span>TOUCH</span> to steer Sword</div>
+            <div class="control-key"><span>A / D</span> or <span>← / →</span> for Keyboard</div>
+            <div class="control-key"><span>3 Paddle Hits</span> = Character Swap + Dialogue!</div>
+          </div>
+
+          <button id="start-btn" class="battle-btn pulse-glow">
+            TAP OR PRESS SPACE TO BATTLE
+          </button>
+        </div>
+      </div>
+
+      <!-- Game Over Overlay -->
+      <div id="game-over-screen" class="overlay-screen hidden">
+        <div class="overlay-card defeat-card">
+          <div class="defeat-badge">⚔️ FALLEN IN BATTLE ⚔️</div>
+          <h2 class="screen-heading">MAHISHMATI CALLS AGAIN</h2>
+          <p id="defeat-quote" class="defeat-dialogue">"Even Kattappa could not save you this time!"</p>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-label">FINAL SCORE</span>
+              <span id="final-score" class="stat-num">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">BEST STREAK</span>
+              <span id="final-streak" class="stat-num">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">HIGH SCORE</span>
+              <span id="final-high-score" class="stat-num">0</span>
+            </div>
+          </div>
+
+          <button id="restart-btn" class="battle-btn pulse-glow">
+            RISE & BATTLE AGAIN (SPACE)
+          </button>
+        </div>
+      </div>
+
+      <!-- Victory Overlay -->
+      <div id="victory-screen" class="overlay-screen hidden">
+        <div class="overlay-card victory-card">
+          <div class="victory-badge">🏆 VICTORY TO MAHISHMATI 🏆</div>
+          <h2 class="screen-heading victory-gold">ALL METALS CRUSHED!</h2>
+          <p id="victory-quote" class="victory-dialogue">"NAA MAATAE SHASANAM! The kingdom is saved!"</p>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-label">FINAL SCORE</span>
+              <span id="win-score" class="stat-num">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">MAX COMBO STREAK</span>
+              <span id="win-streak" class="stat-num">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">NEW HIGH SCORE!</span>
+              <span id="win-high-score" class="stat-num">0</span>
+            </div>
+          </div>
+
+          <button id="play-again-btn" class="battle-btn pulse-glow victory-btn">
+            CELEBRATE & REPLAY (SPACE)
+          </button>
+        </div>
+      </div>
+
+      <!-- On-Screen Mobile Touch Steer Helper -->
+      <div id="touch-controls" class="touch-bar">
+        <span>◀ SLIDE TO MOVE SWORD ▶</span>
+      </div>
+    </main>
+
+    <!-- Footer Tribute Note -->
+    <footer id="game-footer">
+      <span>Tribute to S.S. Rajamouli's Baahubali • Telugu & Indian Cinema Tribute Game</span>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

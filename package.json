@@ -1,0 +1,17 @@
+{
+  "name": "baahubali-brick-breaker",
+  "version": "1.0.0",
+  "description": "Baahubali: The Brick Breaker - Mahishmati Metal Smasher Tribute Game",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static build ready'"
+  },
+  "keywords": [
+    "brick-breaker",
+    "html5-canvas",
+    "baahubali",
+    "game"
+  ],
+  "author": "Antigravity",
+  "license": "MIT"
+}
